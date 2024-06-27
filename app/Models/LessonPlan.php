@@ -35,7 +35,7 @@ class LessonPlan extends Model
     protected function logoUrl(): Attribute
     {
         return Attribute::get(static function (mixed $value, array $attributes): ?string {
-            return $attributes['logo'] ? asset('images/' . $attributes['logo']) : null;
+            return isset($attributes['logo']) ? asset('images/' . $attributes['logo']) : null;
         });
     }
 
