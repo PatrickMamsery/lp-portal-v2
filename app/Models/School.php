@@ -64,6 +64,16 @@ class School extends Model
         return $this->hasMany(Stream::class);
     }
 
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
     public function learningMaterials()
     {
         return $this->hasMany(LearningMaterial::class);

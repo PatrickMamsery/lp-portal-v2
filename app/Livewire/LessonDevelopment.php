@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
+use Filament\Forms;
+use Filament\Tables;
 use App\Models\Stage;
+use App\Models\School;
 use Livewire\Component;
 use App\Models\LessonPlan;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms;
 use Filament\Facades\Filament;
 use function Filament\authorize;
 use Filament\Forms\Contracts\HasForms;
@@ -24,12 +25,22 @@ class LessonDevelopment extends Component implements HasTable, HasForms
     use InteractsWithTable, InteractsWithForms, InteractsWithFormActions;
 
     public ?LessonPlan $record = null;
+    public ?Model $tenant = null;
+
+    public ?string $tenantId = "";
+    public ?string $recordId = "";
 
     public function mount(): void
     {
         $this->record = LessonPlan::query()
             ->firstOrNew([
-                'school_id' => Filament::getTenant()->id,
+                'id' => $this->recordId,
+            ]);
+
+        // Add Tenant
+        $this->tenant = School::query()
+            ->firstOrNew([
+                'id' => $this->tenantId,
             ]);
 
         abort_unless(static::canView($this->record), 404);

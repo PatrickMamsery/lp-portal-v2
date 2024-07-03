@@ -20,3 +20,13 @@ Route::get('/', function () {
 Route::get('teacher/{tenant}/lesson-plan/{record}/edit', App\Filament\Teacher\Pages\LessonPlan::class)
     ->middleware(['web', 'auth'])
     ->name('filament.teacher.pages.lesson-plan.edit');
+
+    // Route::get('teacher/{tenant}/lesson-plan/{record}/edit', function($tenant, $record){
+    //     // Dump record and tenant
+    //     dd([
+    //         'tenant' => $tenant,
+    //         'record' => $record,
+    //     ]);
+    // })
+    // // ->middleware(['web', 'auth'])
+    // ->name('filament.teacher.pages.lesson-plan.edit');

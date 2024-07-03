@@ -270,12 +270,13 @@ class ListPlan extends Component implements HasTable, HasForms
                 Tables\Actions\Action::make('edit')
                     ->label('Edit Lesson Plan')
                     ->icon('heroicon-o-pencil')
-                    ->url(function (LessonPlan $record) {
-                        return route('filament.teacher.pages.lesson-plan.edit', [
-                            'tenant' => Filament::getTenant()->slug,
-                            'record' => $record,
-                        ]);
-                    }),
+                    ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
+                // ->action(function (LessonPlan $record) {
+                //     return route('filament.teacher.pages.lesson-plan.edit', [
+                //         'tenant' => Filament::getTenant()->slug,
+                //         'record' => $record,
+                //     ]);
+                // }),
 
                 Tables\Actions\Action::make('download')
                     ->label('Download')
@@ -296,6 +297,14 @@ class ListPlan extends Component implements HasTable, HasForms
     {
         $this->downloadLessonPlan($data);
     }
+
+    // public static function getPages(): array
+    // {
+    //     return [
+    //         // ...
+    //         'manage' => \App\Filament\Teacher\Pages\LessonPlan::route('/{record}/manage'),
+    //     ];
+    // }
 
     public static function canView(Model $record): bool
     {

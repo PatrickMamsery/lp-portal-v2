@@ -21,8 +21,9 @@ class AttendanceController extends Controller
 
         if ($student) {
             $timestamp = Carbon::parse($validated['timestamp']);
-        
+
             Attendance::create([
+                'school_id' => $student->school_id,
                 'student_id' => $student->id,
                 'date' => $timestamp->toDateString(),
                 'time' => $timestamp->toTimeString(),
