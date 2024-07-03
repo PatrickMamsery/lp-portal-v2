@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Student;
 use Illuminate\Database\Seeder;
-use Faker\Factory as Faker;
+use \Faker\Factory as Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class StudentSeeder extends Seeder
