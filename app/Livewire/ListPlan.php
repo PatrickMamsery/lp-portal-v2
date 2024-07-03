@@ -269,8 +269,8 @@ class ListPlan extends Component implements HasTable, HasForms
             ->actions([
                 Tables\Actions\Action::make('edit')
                     ->label('Edit Lesson Plan')
-                    ->icon('heroicon-o-pencil')
-                    ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
+                    ->icon('heroicon-o-pencil'),
+                    // ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
                 // ->action(function (LessonPlan $record) {
                 //     return route('filament.teacher.pages.lesson-plan.edit', [
                 //         'tenant' => Filament::getTenant()->slug,

@@ -15,4 +15,9 @@ class CalendarPage extends Page
     protected static ?string $navigationLabel = 'Timetable';
 
     protected static ?string $slug = 'timetable';
+
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return false;
+    // }
 }
