@@ -39,7 +39,8 @@ class PreliminarySection extends Component implements HasForms
     {
         $data = $this->record->attributesToArray();
 
-        $this->form->fill($data);
+        // $this->form->fill($data);
+        $this->dispatch('updatePreliminarySection', $data);
     }
 
     protected function getSavedNotification(): Notification

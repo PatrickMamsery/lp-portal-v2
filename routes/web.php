@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('teacher/{tenant}/lesson-plan/{record}/edit', App\Filament\Teacher\Pages\LessonPlan::class)
+    ->middleware(['web', 'auth'])
+    ->name('filament.teacher.pages.lesson-plan.edit');
