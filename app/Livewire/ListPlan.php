@@ -315,6 +315,9 @@ class ListPlan extends Component implements HasTable, HasForms
                             ->label('Subtopic'),
                         TextColumn::make('competence.name')
                             ->label('Competence'),
+                        TextColumn::make('status')
+                            ->badge()
+                            ->label('Status'),
                     ]),
                 ]),
             ])
