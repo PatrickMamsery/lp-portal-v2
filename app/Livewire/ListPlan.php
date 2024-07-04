@@ -100,6 +100,7 @@ class ListPlan extends Component implements HasTable, HasForms
 
                         Forms\Components\Select::make('subject_id')
                             ->relationship('subject', 'name')
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} - {$record->grade->name}")
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
                                     ->required()
@@ -130,7 +131,8 @@ class ListPlan extends Component implements HasTable, HasForms
                             ->relationship('grade', 'name'),
 
                         Forms\Components\Select::make('stream_id')
-                            ->relationship('stream', 'name'),
+                            ->relationship('stream', 'name')
+                            ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->grade->name} - {$record->name}"),
 
                         Forms\Components\TimePicker::make('start_time')
                             ->label('Class Start Time')
