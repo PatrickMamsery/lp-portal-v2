@@ -14,6 +14,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -137,14 +138,14 @@ class ListPlan extends Component implements HasTable, HasForms
                         Forms\Components\TimePicker::make('start_time')
                             ->label('Class Start Time')
                             ->seconds(false),
-                            // ->minutesStep(30)
-                            // ->default(now()),
+                        // ->minutesStep(30)
+                        // ->default(now()),
 
                         Forms\Components\TimePicker::make('end_time')
                             ->label('Class End Time')
                             ->seconds(false),
-                            // ->minutesStep(30)
-                            // ->default(now()->addHour()),
+                        // ->minutesStep(30)
+                        // ->default(now()->addHour()),
                     ])->columns(3),
 
                 Forms\Components\Wizard\Step::make('Topic, Subtopic & Competence')
@@ -234,6 +235,39 @@ class ListPlan extends Component implements HasTable, HasForms
             ->where('school_id', Filament::getTenant()->id)
             ->where('teacher_id', auth()->id());
 
+        // Initialize actions array
+        $actions = [
+            Tables\Actions\ViewAction::make()
+                ->label('View')
+                ->icon('heroicon-o-eye')
+                ->form($this->getFormSchema('view')),
+        ];
+
+        // Check if the URL contains 'admin' and add additional actions if true
+        if (str_contains(Request::url(), 'admin')) {
+            $actions[] = Tables\Actions\Action::make('accept')
+                ->label('Accept')
+                ->color('success')
+                ->icon('heroicon-o-check')
+                ->visible(fn (LessonPlan $record) => $record->status == 'in_review')
+                ->action(function (LessonPlan $record) {
+                    // Edit action logic
+                    $record->status = 'accepted';
+                    $record->save();
+                });
+
+            $actions[] = Tables\Actions\Action::make('reject')
+                ->label('Reject')
+                ->color('danger')
+                ->icon('heroicon-o-x-mark')
+                ->visible(fn (LessonPlan $record) => $record->status == 'in_review')
+                ->action(function (LessonPlan $record) {
+                    // Delete action logic
+                    $record->status = 'rejected';
+                    $record->save();
+                });
+        }
+
         return $table
             ->query($query)
             ->headerActions([
@@ -252,17 +286,17 @@ class ListPlan extends Component implements HasTable, HasForms
                             $record->stages()->create($stageTemplate);
                         }
                     })
-                    // ->using(function (array $data, string $model): Model {
-                    //     // Create lesson plan
-                    //     $lessonPlan = $model::create($data);
+                // ->using(function (array $data, string $model): Model {
+                //     // Create lesson plan
+                //     $lessonPlan = $model::create($data);
 
-                    //     // Create lesson stages for the lesson plan with the lesson plan id
-                    //     foreach ($this->lessonStagesTemplate as $stageTemplate) {
-                    //         $lessonPlan->stages()->create($stageTemplate);
-                    //     }
+                //     // Create lesson stages for the lesson plan with the lesson plan id
+                //     foreach ($this->lessonStagesTemplate as $stageTemplate) {
+                //         $lessonPlan->stages()->create($stageTemplate);
+                //     }
 
-                    //     return $lessonPlan;
-                    // }),
+                //     return $lessonPlan;
+                // }),
             ])
             ->columns([
                 Tables\Columns\Layout\Split::make([
@@ -284,31 +318,32 @@ class ListPlan extends Component implements HasTable, HasForms
                     ]),
                 ]),
             ])
-            ->actions([
-                // Tables\Actions\Action::make('edit')
-                //     ->label('Edit Lesson Plan')
-                //     ->icon('heroicon-o-pencil'),
-                    // ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
-                // ->action(function (LessonPlan $record) {
-                //     return route('filament.teacher.pages.lesson-plan.edit', [
-                //         'tenant' => Filament::getTenant()->slug,
-                //         'record' => $record,
-                //     ]);
-                // }),
-                Tables\Actions\ViewAction::make()
-                    ->label('View')
-                    ->icon('heroicon-o-eye')
-                    ->form($this->getFormSchema('view')),
+            ->actions($actions)
+            // ->actions([
+            //     // Tables\Actions\Action::make('edit')
+            //     //     ->label('Edit Lesson Plan')
+            //     //     ->icon('heroicon-o-pencil'),
+            //     // ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
+            //     // ->action(function (LessonPlan $record) {
+            //     //     return route('filament.teacher.pages.lesson-plan.edit', [
+            //     //         'tenant' => Filament::getTenant()->slug,
+            //     //         'record' => $record,
+            //     //     ]);
+            //     // }),
+            //     Tables\Actions\ViewAction::make()
+            //         ->label('View')
+            //         ->icon('heroicon-o-eye')
+            //         ->form($this->getFormSchema('view')),
 
-                // Tables\Actions\Action::make('download')
-                //     ->label('Download')
-                //     ->icon('heroicon-o-arrow-down-tray')
-                //     ->action(function (Model $record) {
-                //         // $this->downloadLessonPlan($record->stages);
-                //         // $this->dispatch('download', $record->stages);
-                //         $this->dispatch('download', $this->lessonStages);
-                //     }),
-            ])
+            //     // Tables\Actions\Action::make('download')
+            //     //     ->label('Download')
+            //     //     ->icon('heroicon-o-arrow-down-tray')
+            //     //     ->action(function (Model $record) {
+            //     //         // $this->downloadLessonPlan($record->stages);
+            //     //         // $this->dispatch('download', $record->stages);
+            //     //         $this->dispatch('download', $this->lessonStages);
+            //     //     }),
+            // ])
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,

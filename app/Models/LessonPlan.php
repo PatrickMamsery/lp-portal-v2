@@ -19,6 +19,7 @@ class LessonPlan extends Model
         'topic_id',
         'subtopic_id',
         'competence_id',
+        'status',
 
         'logo',
         'show_logo',
