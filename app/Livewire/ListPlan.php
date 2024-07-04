@@ -136,15 +136,15 @@ class ListPlan extends Component implements HasTable, HasForms
 
                         Forms\Components\TimePicker::make('start_time')
                             ->label('Class Start Time')
-                            ->seconds(false)
-                            ->minutesStep(30)
-                            ->default(now()),
+                            ->seconds(false),
+                            // ->minutesStep(30)
+                            // ->default(now()),
 
                         Forms\Components\TimePicker::make('end_time')
                             ->label('Class End Time')
-                            ->seconds(false)
-                            ->minutesStep(30)
-                            ->default(now()->addHour()),
+                            ->seconds(false),
+                            // ->minutesStep(30)
+                            // ->default(now()->addHour()),
                     ])->columns(3),
 
                 Forms\Components\Wizard\Step::make('Topic, Subtopic & Competence')
