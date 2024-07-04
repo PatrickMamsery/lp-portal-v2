@@ -66,6 +66,14 @@ class ListPlan extends Component implements HasTable, HasForms
         ]
     ];
 
+    protected $lessonStagesTemplate = [
+        ['name' => 'INTRODUCTION'],
+        ['name' => 'DEVELOPING NEW KNOWLEDGE'],
+        ['name' => 'REINFORCEMENT'],
+        ['name' => 'REFLECTION'],
+        ['name' => 'CONCLUSION'],
+    ];
+
     public function render()
     {
         return view('livewire.list-plan');
@@ -245,6 +253,23 @@ class ListPlan extends Component implements HasTable, HasForms
                                 ])->columns(3),
                         ]),
                     ])
+                    ->after(function (Model $record) {
+                        // Create lesson stages for the lesson plan with the lesson plan id
+                        foreach ($this->lessonStagesTemplate as $stageTemplate) {
+                            $record->stages()->create($stageTemplate);
+                        }
+                    })
+                    // ->using(function (array $data, string $model): Model {
+                    //     // Create lesson plan
+                    //     $lessonPlan = $model::create($data);
+
+                    //     // Create lesson stages for the lesson plan with the lesson plan id
+                    //     foreach ($this->lessonStagesTemplate as $stageTemplate) {
+                    //         $lessonPlan->stages()->create($stageTemplate);
+                    //     }
+
+                    //     return $lessonPlan;
+                    // }),
             ])
             ->columns([
                 Tables\Columns\Layout\Split::make([
