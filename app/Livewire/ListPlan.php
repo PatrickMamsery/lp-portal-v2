@@ -300,14 +300,14 @@ class ListPlan extends Component implements HasTable, HasForms
                     ->icon('heroicon-o-eye')
                     ->form($this->getFormSchema('view')),
 
-                Tables\Actions\Action::make('download')
-                    ->label('Download')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function (Model $record) {
-                        // $this->downloadLessonPlan($record->stages);
-                        // $this->dispatch('download', $record->stages);
-                        $this->dispatch('download', $this->lessonStages);
-                    }),
+                // Tables\Actions\Action::make('download')
+                //     ->label('Download')
+                //     ->icon('heroicon-o-arrow-down-tray')
+                //     ->action(function (Model $record) {
+                //         // $this->downloadLessonPlan($record->stages);
+                //         // $this->dispatch('download', $record->stages);
+                //         $this->dispatch('download', $this->lessonStages);
+                //     }),
             ])
             ->contentGrid([
                 'md' => 2,
