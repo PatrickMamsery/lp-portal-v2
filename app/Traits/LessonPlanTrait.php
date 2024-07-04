@@ -145,7 +145,8 @@ trait LessonPlanTrait
             </table>
         </div>';
 
-        dd($html_view);
+        // dd($html_view);
+        dd("Printing PDF...");
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($html_view);
 

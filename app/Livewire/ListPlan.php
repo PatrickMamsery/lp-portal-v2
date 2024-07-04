@@ -79,6 +79,152 @@ class ListPlan extends Component implements HasTable, HasForms
         return view('livewire.list-plan');
     }
 
+    protected function getFormSchema($context = 'create'): array
+    {
+        return [
+            Forms\Components\Wizard::make([
+                Forms\Components\Wizard\Step::make('General')
+                    ->schema([
+                        Forms\Components\DatePicker::make('date')
+                            ->default(now()),
+
+                        Forms\Components\Select::make('school_id')
+                            ->disabled()
+                            ->relationship('school', 'name')
+                            ->default(Filament::getTenant()->id),
+
+                        Forms\Components\Select::make('teacher_id')
+                            ->disabled()
+                            ->relationship('teacher', 'name')
+                            ->default(auth()->user()->id),
+
+                        Forms\Components\Select::make('subject_id')
+                            ->relationship('subject', 'name')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('grade_id')
+                                    ->required()
+                                    ->relationship('grade', 'name')
+                                    ->preload()
+                                    ->searchable(),
+                                !Filament::getTenant() ?
+                                    Forms\Components\Select::make('school_id')
+                                    ->required()
+                                    ->relationship('school', 'name')
+                                    ->preload()
+                                    ->searchable() :
+                                    Forms\Components\Hidden::make('school_id')
+                                    ->default(Filament::getTenant()->id),
+                                Forms\Components\Textarea::make('description')
+                                    ->columnSpanFull(),
+                            ])
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Subject')
+                                    ->modalSubmitActionLabel('Create Subject');
+                            }),
+
+                        Forms\Components\Select::make('grade_id')
+                            ->relationship('grade', 'name'),
+
+                        Forms\Components\Select::make('stream_id')
+                            ->relationship('stream', 'name'),
+
+                        Forms\Components\TimePicker::make('start_time')
+                            ->label('Class Start Time')
+                            ->seconds(false)
+                            ->minutesStep(30)
+                            ->default(now()),
+
+                        Forms\Components\TimePicker::make('end_time')
+                            ->label('Class End Time')
+                            ->seconds(false)
+                            ->minutesStep(30)
+                            ->default(now()->addHour()),
+                    ])->columns(3),
+
+                Forms\Components\Wizard\Step::make('Topic, Subtopic & Competence')
+                    ->schema([
+                        Forms\Components\Select::make('topic_id')
+                            ->relationship('topic', 'name')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\Select::make('subject_id')
+                                    ->required()
+                                    ->relationship('subject', 'name')
+                                    ->preload()
+                                    ->searchable(),
+
+                                Forms\Components\Textarea::make('main_objective')
+                                    ->nullable(),
+
+                                Forms\Components\Hidden::make('school_id')
+                                    ->default(Filament::getTenant()->id),
+                            ])
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Topic')
+                                    ->modalSubmitActionLabel('Create Topic');
+                            }),
+
+                        Forms\Components\Select::make('subtopic_id')
+                            ->relationship('subtopic', 'name')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Forms\Components\Select::make('topic_id')
+                                    ->required()
+                                    ->relationship('topic', 'name')
+                                    ->preload()
+                                    ->searchable(),
+
+                                Forms\Components\Hidden::make('school_id')
+                                    ->default(Filament::getTenant()->id),
+                            ])
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Subtopic')
+                                    ->modalSubmitActionLabel('Create Subtopic');
+                            }),
+
+                        Forms\Components\Select::make('competence_id')
+                            ->relationship('competence', 'content')
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('content')
+                                    ->required(),
+
+                                Forms\Components\Select::make('subject_id')
+                                    ->required()
+                                    ->relationship('subject', 'name')
+                                    ->preload()
+                                    ->searchable(),
+
+                                Forms\Components\Select::make('topic_id')
+                                    ->required()
+                                    ->relationship('topic', 'name')
+                                    ->preload()
+                                    ->searchable(),
+
+                                Forms\Components\Hidden::make('school_id')
+                                    ->default(Filament::getTenant()->id),
+                            ])
+                            ->createOptionAction(function (Action $action) {
+                                return $action
+                                    ->modalHeading('Create Competence')
+                                    ->modalSubmitActionLabel('Create Competence');
+                            }),
+                    ])->columns(3),
+            ]),
+        ];
+    }
+
     public function table(Table $table): Table
     {
         // Query the lesson plans associated with the school
@@ -97,162 +243,7 @@ class ListPlan extends Component implements HasTable, HasForms
                     ->model(LessonPlan::class)
                     ->slideOver()
                     ->createAnother(false)
-                    ->form([
-                        Forms\Components\Wizard::make([
-                            Forms\Components\Wizard\Step::make('General')
-                                ->schema([
-                                    Forms\Components\DatePicker::make('date')
-                                        // ->required()
-                                        ->default(now()),
-
-                                    Forms\Components\Select::make('school_id')
-                                        // ->required()
-                                        ->disabled()
-                                        ->relationship(
-                                            'school',
-                                            'name',
-                                        )
-                                        ->default(Filament::getTenant()->id),
-
-                                    Forms\Components\Select::make('teacher_id')
-                                        // ->required()
-                                        ->disabled()
-                                        ->relationship('teacher', 'name')
-                                        ->default(auth()->user()->id),
-
-                                    Forms\Components\Select::make('subject_id')
-                                        // ->required()
-                                        ->relationship('subject', 'name')
-                                        ->createOptionForm([
-                                            Forms\Components\TextInput::make('name')
-                                                ->required()
-                                                ->maxLength(255),
-                                            Forms\Components\Select::make('grade_id')
-                                                ->required()
-                                                ->relationship('grade', 'name')
-                                                ->preload()
-                                                ->searchable(),
-                                            !Filament::getTenant() ?
-                                                Forms\Components\Select::make('school_id')
-                                                ->required()
-                                                ->relationship('school', 'name')
-                                                ->preload()
-                                                ->searchable() :
-                                                Forms\Components\Hidden::make('school_id')
-                                                ->default(Filament::getTenant()->id),
-                                            Forms\Components\Textarea::make('description')
-                                                ->columnSpanFull(),
-                                        ])
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action
-                                                ->modalHeading('Create Subject')
-                                                ->modalSubmitActionLabel('Create Subject');
-                                        }),
-
-                                    Forms\Components\Select::make('grade_id')
-                                        // ->required()
-                                        ->relationship('grade', 'name'),
-
-                                    Forms\Components\Select::make('stream_id')
-                                        // ->required()
-                                        ->relationship('stream', 'name'),
-
-                                    Forms\Components\TimePicker::make('start_time')
-                                        // ->required()
-                                        ->label('Class Start Time')
-                                        ->seconds(false)
-                                        ->minutesStep(30)
-                                        ->default(now()),
-
-                                    Forms\Components\TimePicker::make('end_time')
-                                        // ->required()
-                                        ->label('Class End Time')
-                                        ->seconds(false)
-                                        ->minutesStep(30)
-                                        ->default(now()->addHour()),
-                                ])->columns(3),
-
-                            Forms\Components\Wizard\Step::make('Topic, Subtopic & Competence')
-                                ->schema([
-                                    Forms\Components\Select::make('topic_id')
-                                        // ->required()
-                                        ->relationship('topic', 'name')
-                                        ->createOptionForm([
-                                            Forms\Components\TextInput::make('name')
-                                                ->required()
-                                                ->maxLength(255),
-
-                                            Forms\Components\Select::make('subject_id')
-                                                ->required()
-                                                ->relationship('subject', 'name')
-                                                ->preload()
-                                                ->searchable(),
-
-                                            Forms\Components\Textarea::make('main_objective')
-                                                ->nullable(),
-
-                                            Forms\Components\Hidden::make('school_id')
-                                                ->default(Filament::getTenant()->id),
-                                        ])
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action
-                                                ->modalHeading('Create Topic')
-                                                ->modalSubmitActionLabel('Create Topic');
-                                        }),
-
-                                    Forms\Components\Select::make('subtopic_id')
-                                        // ->required()
-                                        ->relationship('subtopic', 'name')
-                                        ->createOptionForm([
-                                            Forms\Components\TextInput::make('name')
-                                                ->required()
-                                                ->maxLength(255),
-
-                                            Forms\Components\Select::make('topic_id')
-                                                ->required()
-                                                ->relationship('topic', 'name')
-                                                ->preload()
-                                                ->searchable(),
-
-                                            Forms\Components\Hidden::make('school_id')
-                                                ->default(Filament::getTenant()->id),
-                                        ])
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action
-                                                ->modalHeading('Create Subtopic')
-                                                ->modalSubmitActionLabel('Create Subtopic');
-                                        }),
-
-                                    Forms\Components\Select::make('competence_id')
-                                        // ->required()
-                                        ->relationship('competence', 'content')
-                                        ->createOptionForm([
-                                            Forms\Components\TextInput::make('content')
-                                                ->required(),
-
-                                            Forms\Components\Select::make('subject_id')
-                                                ->required()
-                                                ->relationship('subject', 'name')
-                                                ->preload()
-                                                ->searchable(),
-
-                                            Forms\Components\Select::make('topic_id')
-                                                ->required()
-                                                ->relationship('topic', 'name')
-                                                ->preload()
-                                                ->searchable(),
-
-                                            Forms\Components\Hidden::make('school_id')
-                                                ->default(Filament::getTenant()->id),
-                                        ])
-                                        ->createOptionAction(function (Action $action) {
-                                            return $action
-                                                ->modalHeading('Create Competence')
-                                                ->modalSubmitActionLabel('Create Competence');
-                                        }),
-                                ])->columns(3),
-                        ]),
-                    ])
+                    ->form($this->getFormSchema('create'))
                     ->after(function (Model $record) {
                         // Create lesson stages for the lesson plan with the lesson plan id
                         foreach ($this->lessonStagesTemplate as $stageTemplate) {
@@ -292,9 +283,9 @@ class ListPlan extends Component implements HasTable, HasForms
                 ]),
             ])
             ->actions([
-                Tables\Actions\Action::make('edit')
-                    ->label('Edit Lesson Plan')
-                    ->icon('heroicon-o-pencil'),
+                // Tables\Actions\Action::make('edit')
+                //     ->label('Edit Lesson Plan')
+                //     ->icon('heroicon-o-pencil'),
                     // ->url(fn (LessonPlan $record): string => route('filament.teacher.pages.lesson-plan.edit', ['tenant' => Filament::getTenant()->slug, 'record' => $record->id])),
                 // ->action(function (LessonPlan $record) {
                 //     return route('filament.teacher.pages.lesson-plan.edit', [
@@ -302,6 +293,10 @@ class ListPlan extends Component implements HasTable, HasForms
                 //         'record' => $record,
                 //     ]);
                 // }),
+                Tables\Actions\ViewAction::make()
+                    ->label('View')
+                    ->icon('heroicon-o-eye')
+                    ->form($this->getFormSchema('view')),
 
                 Tables\Actions\Action::make('download')
                     ->label('Download')
